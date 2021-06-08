@@ -2,7 +2,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Users = require('../models/user');
 const config =  require('../config/keys');
-const userService = require('./userService')
 
 const authenticate = async params => {
     return Users.findOne({ email:params.email })
@@ -15,17 +14,15 @@ const authenticate = async params => {
                 throw new Error('Authentication failed. Account not verified')
             if(!user.isEnabled)
                 throw new Error('Authentication failed. Account not active')
-                const role = await userService.getUserRole(user._id); 
                 
             const payload = { 
                 email: user.email,
                 id: user.id,
                 time: new Date(),
-                // role: user.role,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 username:user.username,
-                role: role,
+                role: user.role,
             }
             let refreshToken = jwt.sign(payload, config.REFRESH_TOKEN_SECRET, {
                 algorithm: config.REFRESH_TOKEN_ALGO,
@@ -55,7 +52,11 @@ const authenticateOnVerification = params => {
         const payload = {
             email: user.email,
             id: user.id,
-            time: new Date()
+            time: new Date(),
+            firstName: user.firstName,
+            lastName: user.lastName,
+            username:user.username,
+            role: user.role,
         }
         let refreshToken = jwt.sign(payload, config.REFRESH_TOKEN_SECRET, {
             algorithm: config.REFRESH_TOKEN_ALGO,
