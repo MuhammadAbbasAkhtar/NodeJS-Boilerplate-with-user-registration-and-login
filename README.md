@@ -85,3 +85,14 @@ This template also includes the user registration module, which has;
 
 > If you don't want the directories to be auto generated,  comment/remove `createDirectories()` in `config/init.js`
 
+---
+
+## API Reference
+
+### After starting server, visit `/api/docs`
+
+---
+
+## Feedback
+
+If you have any feedback, please reach out to me at m.abbas.akhtar@ampfolios.com
