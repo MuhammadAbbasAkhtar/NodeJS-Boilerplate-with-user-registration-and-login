@@ -20,53 +20,99 @@
                 ],
                 "responses": {}
             }
-          },
-          "/api/auth/login":{
-            "post":{
-                "tags": ["Public - 4"],
-                "description": "User Login",
-                "parameters": [
-                    { "name":"email", "in": "formData", "required": true, "type": "string" },
-                    { "name":"password", "in": "formData", "required": true, "type": "string" }
-                ],
-                "responses": {}
-            }
-          },
-          "/api/auth/verify/{token}":{
-            "get":{
-              "tags":["Public - 4"],
-              "description": "Verify User",
-              "parameters": [{ "name": "token","in": "path","required": true } ],
-              "responses":{}
-            }
-          },
-          "/api/auth/resend":{
-            "post":{
-              "tags":["Public - 4"],
-              "description": "Resend Verification Email",
-              "parameters": [{ "name": "email","in": "formData","required": true }],
-              "responses":{}
-            }
-          },
-          "/api/auth/validate-token":{
-            "get":{
-              "tags":["Auth - 2"],
-              "description": "Validate User Token",
+        },
+        "/api/auth/login":{
+          "post":{
+              "tags": ["Public - 4"],
+              "description": "User Login. If user has 2FA then you'll get a temporar token that is valid till `config.keys.tempTokenExpireTime`. Upon verifying 2FA you'll get the actual token",
               "parameters": [
-                { "name": "Authorization", "in": "header", "type": "string", "default": "Bearer ", "required": false  }
+                  { "name":"email", "in": "formData", "required": true, "type": "string" },
+                  { "name":"password", "in": "formData", "required": true, "type": "string" }
               ],
-              "responses":{}
-            }
-          },
-          "/api/auth/refresh":{
-            "post":{
-              "tags":["Auth - 2"],
-              "description": "Refresh User Token",
-              "parameters": [
-                { "name": "Authorization", "in": "header", "type": "string", "default": "Bearer ", "required": false  }
-              ],
-              "responses":{}
+              "responses": {}
+          }
+        },
+        "/api/auth/verify/{token}":{
+          "get":{
+            "tags":["Public - 4"],
+            "description": "Verify User",
+            "parameters": [{ "name": "token","in": "path","required": true } ],
+            "responses":{}
+          }
+        },
+        "/api/auth/resend":{
+          "post":{
+            "tags":["Public - 4"],
+            "description": "Resend Verification Email",
+            "parameters": [{ "name": "email","in": "formData","required": true }],
+            "responses":{}
+          }
+        },
+        "/api/auth/validate-token":{
+          "get":{
+            "tags":["Auth - 3"],
+            "description": "Validate User Token",
+            "parameters": [
+              { "name": "Authorization", "in": "header", "type": "string", "default": "Bearer ", "required": false  }
+            ],
+            "responses":{}
+          }
+        },
+        "/api/auth/refresh":{
+          "post":{
+            "tags":["Auth - 3"],
+            "description": "Refresh User Token",
+            "parameters": [
+              { "name": "Authorization", "in": "header", "type": "string", "default": "Bearer ", "required": false  }
+            ],
+            "responses":{}
+          }
+        },
+        "/api/user/account":{
+          "get":{
+            "tags":["User - 4"],
+            "description": "Fetch user account details",
+            "parameters":[
+              { "name": "Authorization", "in": "header", "type": "string", "default": "Bearer ", "required": true  }
+            ],
+            "responses":{}
+          }
+        },
+        "/api/user/account/totp-setup":{
+          "put":{
+            "tags":["User - 4"],
+            "description": "Setup 2FA",
+            "parameters":[
+              { "name": "Authorization", "in": "header", "type": "string", "default": "Bearer ", "required": true  }
+            ],
+            "responses":{
+              "200": {
+                "description":"returns a secret object containing code in `ascii`,`hex`,`base32` & `url for QrCode`"
+              }
             }
           }
+        },
+        "/api/user/account/totp-setup/verify":{
+          "put":{
+            "tags":["User - 4"],
+            "description": "verify 2FA from auth app. This is 1 time required",
+            "parameters":[
+              { "name": "Authorization", "in": "header", "type": "string", "default": "Bearer ", "required": true  },
+              { "name": "token", "in": "formData", "type":"string", "required": true }
+            ],
+            "responses":{}
+          }
+        },
+        "/api/user/2fa/verify":{
+          "put":{
+            "tags":["Auth - 3"],
+            "description": "verify 2FA from auth app. If 2FA is enabled, verify code here to get the longer token",
+            "parameters":[
+              { "name": "Authorization", "in": "header", "type": "string", "default": "Bearer ", "required": true  },
+              { "name": "token", "in": "formData", "type":"string", "required": true }
+            ],
+            "responses":{}
+          }
+        }
     }
 }

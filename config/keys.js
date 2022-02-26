@@ -7,6 +7,7 @@ module.exports = {
     REFRESH_TOKEN_LIFE:"365d",
     REFRESH_TOKEN_ALGO:"HS256",
     tokenExpireTime:"6h",
+    tempTokenExpireTime:"2m",
     welcome_email_subject: `Welcome to ${APP_NAME}`,
     emailUrl:'/api/auth/verify/',
     emailLocalUrl:`/api/auth/verify/`,
@@ -16,6 +17,13 @@ module.exports = {
         uploadsRoot: 'uploads',
         uploadsPublic: 'uploads/public',
         uploadsPrivate: 'uploads/private',
+    },
+    session:{ 
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: true,
+        cookie: { secure: true },
+        genid: function(req){ return new Date().getTime()}
     }
  
 }

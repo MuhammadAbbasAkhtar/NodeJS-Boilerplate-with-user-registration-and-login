@@ -9,6 +9,7 @@ const config = require('./config/keys');
 const bodyParser = require('body-parser')
 const fs = require('fs')
 const PORT = parseInt(process.env.PORT)
+const session = require('express-session')
 //#region  === 0 - Empty Log files
     fs.truncate('logs/error.log', 0, function(){})   
     fs.truncate('logs/info.log', 0, function(){}) 
@@ -17,6 +18,8 @@ const PORT = parseInt(process.env.PORT)
     const app = express();
     app.use(express.urlencoded({ extended: true }));
     process.env['LOCAL_IP']  = helper.getLocalIP()
+
+   
 //#endregion
 //#region  === 2 - CONFIG CORS
     var corsOptions = {
@@ -52,8 +55,11 @@ const PORT = parseInt(process.env.PORT)
 //#endregion
 //#region  === 4 - INITIALIZE PASSPORT MIDDLEWARE
     app.use(passport.initialize());
+     app.use(session(config.session));
+    // app.use(passport.initialize());
+    app.use(passport.session());
     require("./middlewares/jwt")(passport);
-//#endregion
+//#endregion 
 //#region  === 5 - CONFIGURE ROUTES
     require('./routes/index')(app);
 //#endregion
