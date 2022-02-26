@@ -72,7 +72,18 @@ const UserSchema = new mongoose.Schema({
         type:String,
         required:false
     },
-    
+    useOTP:{
+        type: Boolean,
+        default: false
+    },
+    OTP_secret:{
+        type: Object,
+        required:false
+    },
+    OTP_temp_secret:{
+        type: Object,
+        required:false
+    },
 
 }, {timestamps: true});
 

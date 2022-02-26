@@ -15,27 +15,10 @@ const authenticate = async params => {
             if(!user.isEnabled)
                 throw new Error('Authentication failed. Account not active')
                 
-            const payload = { 
-                email: user.email,
-                id: user.id,
-                time: new Date(),
-                firstName: user.firstName,
-                lastName: user.lastName,
-                username:user.username,
-                role: user.role,
-            }
-            let refreshToken = jwt.sign(payload, config.REFRESH_TOKEN_SECRET, {
-                algorithm: config.REFRESH_TOKEN_ALGO,
-                expiresIn: config.REFRESH_TOKEN_LIFE
-            })
-            // console.log("refreshToken", refreshToken);
-            Object.assign(payload, {refreshToken})
-            var token = jwt.sign(payload, config.JWT_SECRET, {
-                expiresIn: config.tokenExpireTime
-            });
+            const token = await generateToken(user, true)
             // user.refreshToken = refreshToken; //save the refresh token to db
             // user.save()
-            return token;
+            return {token, user};
         })
 }
 const authenticateOnVerification = params => {
@@ -70,7 +53,30 @@ const authenticateOnVerification = params => {
     })
 }
 
+const generateToken = async (user, isTemp = false) => {
+    const payload = { 
+        email: user.email,
+        id: user.id,
+        time: new Date(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username:user.username,
+        role: user.role,
+    }
+    if(!isTemp){
+        let refreshToken = jwt.sign(payload, config.REFRESH_TOKEN_SECRET, {
+            algorithm: config.REFRESH_TOKEN_ALGO,
+            expiresIn: config.REFRESH_TOKEN_LIFE
+        })
+        Object.assign(payload, {refreshToken})
+    }
+    const token = jwt.sign(payload, config.JWT_SECRET, {
+        expiresIn: isTemp ? config.tempTokenExpireTime: config.tokenExpireTime
+    });
+    return token
+}
 module.exports = {
     authenticate,
-    authenticateOnVerification
+    authenticateOnVerification,
+    generateToken
 }

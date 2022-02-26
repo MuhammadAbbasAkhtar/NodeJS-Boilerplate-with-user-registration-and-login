@@ -10,6 +10,7 @@ const Cryptr = require('cryptr');
 const crpytR = new Cryptr(process.env.CRYPTR_EMAIL_SECRET)  
 const {checkRefreshToken} = require('../middlewares/jwt')
 const jwt = require('jsonwebtoken');
+
 var jwtDecode = require('jwt-decode');
 
 async function sendVerificationEmail(user, req, res){
@@ -171,8 +172,13 @@ const verify = async (req, res) => {
 const login = async (req, res) => {
     try {
         return await authService.authenticate(req.body)
-        .then(token => {
-            helper.sendResponse(res, {success: true, data: { token }})
+        .then(data => {
+            if(!data.user.useOTP)
+                helper.sendResponse(res, {success: true, data: { token: data.token }})
+            else{
+                
+                return helper.sendResponse(res, {message: '2FA is enabled, verify token...', verify_url: '/api/user/2fa/verify', data: { token: data.token }, success:true})
+            }
         })
         .catch(err => {
             helper.prettyLog(err)

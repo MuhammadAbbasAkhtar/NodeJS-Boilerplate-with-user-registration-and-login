@@ -27,7 +27,25 @@ const generateVerificationToken = async (user) => {
 const getUserByField = async field => {
     return await User.findOne(field)
 }
-
+const add_OTP_temp_secret = async (id, secret) => {
+    return await User.findByIdAndUpdate(id, {
+        OTP_temp_secret:secret,
+        // useOTP:true
+    }, {new: true})
+}
+const getOTPTempSecret = async id => {
+    return await User.findById(id).select('OTP_temp_secret')
+}
+const getOTPSecret = async id => {
+    return await User.findById(id).select('OTP_secret')
+}
+const add_OTP_secret = async (id, secret) => {
+    return await User.findByIdAndUpdate(id, {
+        OTP_secret:secret,
+        useOTP:true,
+        OTP_temp_secret:null
+    }, {new: true})
+}
 module.exports = {
     addUser,
     getUserByEmail,
@@ -37,4 +55,8 @@ module.exports = {
     generateVerificationToken,
     getUserByField,
     getUserByEmailWithFields,
+    add_OTP_temp_secret,
+    getOTPTempSecret,
+    add_OTP_secret,
+    getOTPSecret,
 }
